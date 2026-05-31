@@ -1,18 +1,17 @@
 # vid-ups
 
-`vid-ups` is a command-line utility that leverages **Intel OpenVINO** for hardware-accelerated AI video upscaling on CPU targets.
+`vid-ups` is a command-line tool for hardware-accelerated AI video upscaling on CPU targets (Intel).
 
-By converting PyTorch weights (.pth) to an ONNX graph, compiling them into an optimized OpenVINO runtime execution engine, and orchestrating dual FFmpeg subprocess pipes, this script achieves fast execution without I/O bottlenecks.
+By converting PyTorch weights (.pth) to an ONNX graph, compiling them for use with the optimized OpenVINO runtime, and orchestrating dual FFmpeg subprocess pipes, this script achieves faster execution and avoids the need to first convert the video into its individual frames on disk.
 
 ## Features
 
-- **2 Supported Engines**: 
-  - **RealESRGAN Mode**: Direct initialization of the standard RRDBNet architecture with customizable body layer slicing for performance tuning.
-  - **Spandrel Mode**: Automatic model architecture detection and loading via the Spandrel library.
-- **FFmpeg Piping**: Pipes raw video frames directly out of and back into FFmpeg, retaining the original audio track.
-- **Intel OpenVINO Optimization**: Compiles models directly to Intel-optimized execution units.
-- **Asynchronous Inference Pipeline**: Utilizes OpenVINO's `AsyncInferQueue` to process frames concurrently.
-- **In-Memory ONNX**: Exports PyTorch models to an ONNX structure in a virtual memory buffer.
+- **2 Modes**:
+  - RealESRGAN Mode: Direct initialization of the RRDBNet architecture with customizable removal of layer blocks for performance tuning.
+  - Spandrel Mode: Automatic model architecture detection and loading via Spandrel.
+- **FFmpeg Piping**: Pipes raw video frames directly out of and back into FFmpeg. Retains the original audio track.
+- **OpenVINO Optimization**: Compiles models directly to Intel-optimized execution units.
+- **Asynchronous Inference**: Utilizes OpenVINO's `AsyncInferQueue` to process frames.
 
 ## Pipeline Architecture
 
@@ -62,7 +61,7 @@ The script exposes a command-line interface with explicit subcommands for each m
     ./vid_ups.sh <path_to_video> [mode] [options]
 
 ### Mode 1: RealESRGAN
-For traditional RRDBNet architectures where you want to truncate layers from the model body to speed up processing.
+For RRDBNet architectures where you want to remove layer blocks from the model to speed up processing.
 
     ./vid_ups.sh input.mp4 realesrgan --model weights/realesrgan.pth --keep-layers 10
 
@@ -71,7 +70,7 @@ For traditional RRDBNet architectures where you want to truncate layers from the
 - -k, --keep-layers (Required): Integer count specifying how many blocks of the structural model body to retain.
 
 ### Mode 2: Spandrel
-For loading checkpoints natively supported by Spandrel's wrapper interface without explicit structural definitions.
+For loading checkpoints natively supported by Spandrel's model loader.
 
     ./vid_ups.sh input.mp4 spandrel --model weights/your_upscaler.pth
 
