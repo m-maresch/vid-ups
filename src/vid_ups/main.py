@@ -30,9 +30,9 @@ def parse_arguments():
         help="Path to the input video file",
     )
 
-    # Create subparsers for the two distinct modes
+    # Create subparsers for the two modes
     subparsers = parser.add_subparsers(
-        dest="mode", required=True, help="Choose the processing mode"
+        dest="mode", required=True, help="Choose the mode"
     )
 
     # Mode 1: RealESRGAN

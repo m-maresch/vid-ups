@@ -15,7 +15,7 @@ By converting PyTorch weights (.pth) to an ONNX graph, compiling them for use wi
 
 ## Pipeline Architecture
 
-The script processes video files through an execution pipeline:
+The script processes video files through a pipeline:
 
     [Input Video] 
           │
@@ -25,10 +25,10 @@ The script processes video files through an execution pipeline:
           ▼ (Normalization)
     [OpenVINO AsyncInferQueue] ◄─── (ONNX Model via PyTorch)
           │
-          ▼ (Completion Callback: Scale)
+          ▼ (Completion Callback)
     [Upscaled Frames] 
           │
-          ▼ (FFmpeg Muxer Pipe + Audio Mapping)
+          ▼ (FFmpeg Muxer Pipe + Audio Copy)
     [Output Video (2x)]
 
 ## Prerequisites
@@ -56,7 +56,7 @@ Then install the dependencies into the venv as per the `requirements.txt`.
 
 ## Usage
 
-The script exposes a command-line interface with explicit subcommands for each mode. The output file is automatically saved at 2x scale with the suffix _2x.
+The script exposes a command-line interface with subcommands for each mode. The output file is automatically saved at 2x scale with the suffix `_2x`.
 
     ./vid_ups.sh <path_to_video> [mode] [options]
 
@@ -66,8 +66,8 @@ For RRDBNet architectures where you want to remove layer blocks from the model t
     ./vid_ups.sh input.mp4 realesrgan --model weights/realesrgan.pth --keep-layers 10
 
 **Arguments:**
-- -m, --model (Required): Path to the RealESRGAN .pth checkpoint (see [here](https://github.com/xinntao/Real-ESRGAN/releases), e.g. `RealESRGAN_x2plus.pth`).
-- -k, --keep-layers (Required): Integer count specifying how many blocks of the structural model body to retain.
+- -m, --model (required): Path to the RealESRGAN .pth checkpoint (see [here](https://github.com/xinntao/Real-ESRGAN/releases), e.g. `RealESRGAN_x2plus.pth`).
+- -k, --keep-layers (required): Count specifying how many blocks of the structural model body to retain.
 
 ### Mode 2: Spandrel
 For loading checkpoints natively supported by Spandrel's model loader.
@@ -75,11 +75,11 @@ For loading checkpoints natively supported by Spandrel's model loader.
     ./vid_ups.sh input.mp4 spandrel --model weights/your_upscaler.pth
 
 **Arguments:**
-- -m, --model (Required): Path to the Spandrel-supported .pth file (see [here](https://github.com/chaiNNer-org/spandrel#single-image-super-resolution), e.g. `spanx2_ch52.pth`).
+- -m, --model (required): Path to the Spandrel-supported .pth file (see [here](https://github.com/chaiNNer-org/spandrel#single-image-super-resolution), e.g. `spanx2_ch52.pth`).
 
 ## Intel Performance Tuning
 
-The script defaults to 8 execution threads. Experiment with setting `"PERFORMANCE_HINT": "THROUGHPUT"` or altering `INFERENCE_NUM_THREADS` to match your CPU's physical core count.
+The script defaults to 8 execution threads. You may want to experiment with setting `"PERFORMANCE_HINT": "THROUGHPUT"` or altering `INFERENCE_NUM_THREADS` to match your CPU's physical core count.
 
 ## License
 
