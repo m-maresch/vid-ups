@@ -13,7 +13,6 @@ from optim import compile
 from video import start_reader, start_writer
 
 torch.set_grad_enabled(False)
-torch.backends.cudnn.benchmark = False
 
 frame_count = 0
 start_time = time.perf_counter()
